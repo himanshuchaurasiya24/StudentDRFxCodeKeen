@@ -6,8 +6,8 @@ from  .models import *
 class StudentSerializer (serializers.ModelSerializer):
     class Meta:
         model= Student
-        exclude= ['id']
-        # fields = '__all__'
+        # exclude= ['id']
+        fields = '__all__'
         # fields = ['name', 'age']
     def validate(self, data):
         if data['age']<18:
