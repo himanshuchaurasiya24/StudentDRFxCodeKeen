@@ -11,8 +11,22 @@ class StudentSerializer (serializers.ModelSerializer):
         # fields = ['name', 'age']
     def validate(self, data):
         if data['age']<18:
-            raise serializers.ValidationError({'error':'age cna not be less than 18'})
+            raise serializers.ValidationError({'error':'age can not be less than 18'})
         for char in data['name']:
             if char.isdigit():
                 raise serializers.ValidationError({'error':'name can not contain any number.'})
         return data
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Category
+        fields='__all__'
+        # fields=['category_name']
+class Bookserializer (serializers.ModelSerializer):
+    # pass CategorySerializer() as category is given as a foreign key.
+    category = CategorySerializer()    
+    class Meta:
+        model = Book
+        fields= '__all__'
+        # either pass depth or the category in this case for inclusion of foreign key model data depth will contain
+        # all the data of the foreign key and pass it to the api whereas category will allow to pass the data defined in the category serializer 'fields' attributes
+        # depth=1
