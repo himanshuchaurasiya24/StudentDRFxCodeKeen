@@ -1,6 +1,7 @@
 from rest_framework.serializers import Serializer
 from rest_framework import serializers
 from  .models import *
+from rest_framework.response import Response
 from django.contrib.auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,10 +34,32 @@ class CategorySerializer(serializers.ModelSerializer):
         # fields=['category_name']
 class BookSerializer (serializers.ModelSerializer):
     # pass CategorySerializer() as category is given as a foreign key.
-    category = CategorySerializer()    
+    category = CategorySerializer()  
+      
     class Meta:
         model = Book
         fields= '__all__'
         # either pass depth or the category in this case for inclusion of foreign key model data depth will contain
         # all the data of the foreign key and pass it to the api whereas category will allow to pass the data defined in the category serializer 'fields' attributes
         # depth=1
+    def create(self, validated_data):
+        try:
+            category_data = validated_data.pop('category')
+            print(category_data)
+            print(category_data['category_name'])
+            category_check = Category.objects.filter(category_name=category_data['category_name'])
+            print(len(category_check))
+            # print(category_check[0].category_name)
+            if  len(category_check)==0:
+                return {'status':400, 'message':'e','data':'category_data'}
+            else:
+                category = Category.objects.get_or_create(**category_data)[0]
+                print(category.id)
+                book = Book.objects.create(category=category, **validated_data)
+                return book
+                
+        except Exception as e:
+            print('hjbskfjndksjngdlsnkg')
+            return {'status':400, 'message':'e','data':'category_data'}
+            
+           
