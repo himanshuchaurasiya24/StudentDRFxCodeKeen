@@ -1,7 +1,17 @@
 from rest_framework.serializers import Serializer
 from rest_framework import serializers
 from  .models import *
-
+from django.contrib.auth.models import User
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields=['username', 'password']
+    def create(self, validated_data):
+        user = User.objects.create(username=validated_data['username'])
+        # to encrypt the password user setpassword method like below
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
 class StudentSerializer (serializers.ModelSerializer):
     class Meta:
@@ -21,7 +31,7 @@ class CategorySerializer(serializers.ModelSerializer):
         model= Category
         fields='__all__'
         # fields=['category_name']
-class Bookserializer (serializers.ModelSerializer):
+class BookSerializer (serializers.ModelSerializer):
     # pass CategorySerializer() as category is given as a foreign key.
     category = CategorySerializer()    
     class Meta:
